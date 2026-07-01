@@ -1,0 +1,22 @@
+frontend/script.js
+
+async function analyzeChat() {
+  const chat = document.getElementById("chatInput").value;
+
+  const res = await fetch("http://localhost:3001/analyze", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ chat })
+  });
+
+  const data = await res.json();
+
+  document.getElementById("output").innerHTML = `
+    <h3>Result</h3>
+    <p><b>Toxicity Score:</b> ${data.toxicity_score}</p>
+    <p><b>Severity:</b> ${data.severity}</p>
+    <p><b>Categories:</b> ${data.categories.join(", ")}</p>
+  `;
+}
