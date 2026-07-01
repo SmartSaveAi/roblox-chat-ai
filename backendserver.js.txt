@@ -1,0 +1,24 @@
+backend/server.js
+
+import express from "express";
+import cors from "cors";
+import { analyzeChat } from "./ai.js";
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+app.post("/analyze", (req, res) => {
+  const { chat } = req.body;
+
+  if (!chat) {
+    return res.status(400).json({ error: "No chat provided" });
+  }
+
+  const result = analyzeChat(chat);
+  res.json(result);
+});
+
+app.listen(3001, () => {
+  console.log("AI Moderation Server running on port 3001");
+});
