@@ -1,0 +1,39 @@
+backend/detector.js
+
+const badWords = [
+  "idiot",
+  "stupid",
+  "dumb",
+  "noob",
+  "shut up"
+];
+
+export function detectBadWords(text) {
+  const lower = text.toLowerCase();
+  return badWords.filter(word => lower.includes(word));
+}
+
+export function detectPatterns(text) {
+  const lower = text.toLowerCase();
+
+  return {
+    harassment:
+      lower.includes("go die") ||
+      lower.includes("you suck") ||
+      lower.includes("trash"),
+
+    threat:
+      lower.includes("kill you") ||
+      lower.includes("i will hurt") ||
+      lower.includes("die in real life"),
+
+    scam:
+      lower.includes("free robux") ||
+      lower.includes("http") ||
+      lower.includes("click this"),
+
+    spam:
+      /(.)\1\1\1/.test(lower) || // repeated letters
+      lower.length > 120
+  };
+}
