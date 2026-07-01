@@ -1,0 +1,59 @@
+backend/ai.js
+
+import { detectBadWords, detectPatterns } from "./detector.js";
+
+export function analyzeChat(chatText) {
+  const lines = chatText.split("\n");
+
+  let score = 0;
+  let categories = new Set();
+  let flaggedMessages = [];
+
+  for (let line of lines) {
+    const badWords = detectBadWords(line);
+    const patterns = detectPatterns(line);
+
+    if (badWords.length > 0) {
+      score += 25;
+      categories.add("Profanity");
+      flaggedMessages.push({ line, reason: "Bad words detected" });
+    }
+
+    if (patterns.harassment) {
+      score += 30;
+      categories.add("Harassment");
+      flaggedMessages.push({ line, reason: "Harassment detected" });
+    }
+
+    if (patterns.threat) {
+      score += 40;
+      categories.add("Threat");
+      flaggedMessages.push({ line, reason: "Threat detected" });
+    }
+
+    if (patterns.scam) {
+      score += 35;
+      categories.add("Scam");
+      flaggedMessages.push({ line, reason: "Scam detected" });
+    }
+
+    if (patterns.spam) {
+      score += 15;
+      categories.add("Spam");
+    }
+  }
+
+  if (score > 100) score = 100;
+
+  let severity =
+    score > 70 ? "HIGH" :
+    score > 40 ? "MEDIUM" :
+    "LOW";
+
+  return {
+    toxicity_score: score,
+    severity,
+    categories: [...categories],
+    flaggedMessages
+  };
+}
